@@ -94,3 +94,12 @@ class SimpleEquation(Equation):
         return "({x} {op_1} {y}) {op_2} {z}".format(
             x=self.x, op_1=functions[self.op_1], y=self.y,
             op_2=functions[self.op_2], z=self.z)
+
+
+def dump_random_equations(outfile_name, equation_cls, number_of_eqs):
+    with open(outfile_name, 'w') as out:
+        out.write("equation,correct_answer,incorrect_answer\n")
+        for i in range(number_of_eqs):
+            eq = equation_cls.random()
+            out.write("%s,%s,%s\n" % (
+                eq, eq.correct_answer, eq.incorrect_answer))
