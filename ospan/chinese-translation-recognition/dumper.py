@@ -16,7 +16,7 @@ def load(filename):
 def separate_by_color(reader):
     colors = dict()
     for (color, group) in groupby(
-            reader, lambda x: x['Color Group']):
+            reader, lambda x: x['Color_Group']):
         colors[color] = list(group)
     return colors
 
