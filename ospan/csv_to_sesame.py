@@ -16,8 +16,10 @@ class Loop(object):
         self.order = order
 
     def __str__(self):
-        column_order = ";".join(variable.name for variable
-                                in self.variable_rows[0])
+        all_columns = set()
+        for row in self.variable_rows:
+            all_columns.update({variable.name for variable in row})
+        column_order = ";".join(sorted(list(all_columns)))
         s = """define loop {name}
 \tset repeat "{repeat}"
 \tset description "{description}"
@@ -45,8 +47,13 @@ class Loop(object):
 Variable = namedtuple("Variable", ["name", "value"])
 
 
-def line_to_variables(line):
-    pass
+def group_to_variables(group):
+    variable_rows = []
+    for row in group:
+        variable_rows.append([Variable(name=key, value=val)
+                              for (key, val) in row.items()
+                              if key != "Loop_Name"])
+    return variable_rows
 
 
 def run(infile, outfile):
@@ -54,11 +61,7 @@ def run(infile, outfile):
     with open(outfile, 'w') as out:
         for (loop_name, group) in groupby(
                 csv_file, lambda x: x['Loop_Name']):
-            variable_rows = []
-            for row in group:
-                variable_rows.append([Variable(name=key, value=val)
-                                      for (key, val) in row.items()
-                                      if key != "Loop_Name"])
+            variable_rows = group_to_variables(group)
             loop = Loop(loop_name, variable_rows=variable_rows)
             out.write(str(loop))
             out.write("\n")
